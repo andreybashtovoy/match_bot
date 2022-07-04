@@ -11,3 +11,5 @@ def make_keyboard_for_start_command() -> InlineKeyboardMarkup:
     ]]
 
     return InlineKeyboardMarkup(buttons)
+
+

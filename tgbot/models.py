@@ -32,6 +32,27 @@ class User(CreateUpdateTracker):
     objects = GetOrNoneManager()  # user = User.objects.get_or_none(user_id=<some_id>)
     admins = AdminUserManager()  # User.admins.all()
 
+    bot_language = models.CharField(max_length=2, default='RU')
+
+    class Sex(models.IntegerChoices):
+        MALE = 0
+        FEMALE = 1
+
+    sex = models.IntegerField(choices=Sex.choices, default=Sex.MALE)
+    age = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+    name = models.CharField(max_length=30, null=True, blank=True)
+    location_lat = models.FloatField(default=0)
+    location_lon = models.FloatField(default=0)
+    location_name = models.CharField(null=True, blank=True, max_length=200)
+
+    class Interest(models.IntegerChoices):
+        BOYS = 0
+        GIRLS = 1
+        ALL = 2
+
+    interested_in = models.IntegerField(choices=Interest.choices, default=Interest.GIRLS)
+
     def __str__(self):
         return f'@{self.username}' if self.username is not None else f'{self.user_id}'
 

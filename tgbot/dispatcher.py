@@ -10,11 +10,13 @@ from telegram import Bot, Update, BotCommand
 from telegram.ext import (
     Updater, Dispatcher, Filters,
     CommandHandler, MessageHandler,
-    CallbackQueryHandler,
-)
+    CallbackQueryHandler, ConversationHandler, )
 
 from dtb.celery import app  # event processing in async mode
 from dtb.settings import TELEGRAM_TOKEN, DEBUG
+from tgbot.handlers.states.handlers import choose_language, LANGUAGE, SEX, choose_sex, AGE, set_age, NAME, set_name, \
+    INTEREST, set_interest
+from tgbot.handlers.states.static_text import language_codes
 
 from tgbot.handlers.utils import files, error
 from tgbot.handlers.admin import handlers as admin_handlers
@@ -26,12 +28,14 @@ from tgbot.handlers.broadcast_message.manage_data import CONFIRM_DECLINE_BROADCA
 from tgbot.handlers.broadcast_message.static_text import broadcast_command
 
 
+def cancel(dp):
+    pass
+
+
 def setup_dispatcher(dp):
     """
     Adding handlers for events from Telegram
     """
-    # onboarding
-    dp.add_handler(CommandHandler("start", onboarding_handlers.command_start))
 
     # admin commands
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
@@ -47,7 +51,8 @@ def setup_dispatcher(dp):
 
     # broadcast message
     dp.add_handler(
-        MessageHandler(Filters.regex(rf'^{broadcast_command}(/s)?.*'), broadcast_handlers.broadcast_command_with_message)
+        MessageHandler(Filters.regex(rf'^{broadcast_command}(/s)?.*'),
+                       broadcast_handlers.broadcast_command_with_message)
     )
     dp.add_handler(
         CallbackQueryHandler(broadcast_handlers.broadcast_decision_handler, pattern=f"^{CONFIRM_DECLINE_BROADCAST}")
@@ -61,17 +66,24 @@ def setup_dispatcher(dp):
     # handling errors
     dp.add_error_handler(error.send_stacktrace_to_tg_chat)
 
-    # EXAMPLES FOR HANDLERS
-    # dp.add_handler(MessageHandler(Filters.text, <function_handler>))
-    # dp.add_handler(MessageHandler(
-    #     Filters.document, <function_handler>,
-    # ))
-    # dp.add_handler(CallbackQueryHandler(<function_handler>, pattern="^r\d+_\d+"))
-    # dp.add_handler(MessageHandler(
-    #     Filters.chat(chat_id=int(TELEGRAM_FILESTORAGE_ID)),
-    #     # & Filters.forwarded & (Filters.photo | Filters.video | Filters.animation),
-    #     <function_handler>,
-    # ))
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler("start", onboarding_handlers.command_start)],
+        states={
+            LANGUAGE: [MessageHandler(Filters.text, choose_language)],
+            SEX: [MessageHandler(Filters.text, choose_sex)],
+            AGE: [MessageHandler(Filters.text, set_age)],
+            NAME: [MessageHandler(Filters.text, set_name)],
+            INTEREST: [MessageHandler(Filters.text, set_interest)],
+            # LOCATION: [
+            #     MessageHandler(filters.LOCATION, location),
+            #     CommandHandler("skip", skip_location),
+            # ],
+            # BIO: [MessageHandler(filters.TEXT & ~filters.COMMAND, bio)],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+    )
+
+    dp.add_handler(conv_handler)
 
     return dp
 
@@ -91,7 +103,7 @@ def run_pooling():
     # when you run local test
     # bot.send_message(text='👋', chat_id=<YOUR TELEGRAM ID>)
 
-    updater.start_polling()
+    updater.start_polling(timeout=1000)
     updater.idle()
 
 
