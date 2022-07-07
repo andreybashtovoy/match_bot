@@ -2,12 +2,13 @@ from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 
 from tgbot.handlers.states.keyboards import make_keyboard_for_sex, make_keyboard_for_language, make_keyboard_for_name, \
-    make_keyboard_for_interest
+    make_keyboard_for_interest, make_location_keyboard, make_select_location_keyboard
 from tgbot.handlers.states.static_text import language_codes, CHOOSE_SEX, CHOOSE_LANGUAGE, MAN, WOMAN, ENTER_AGE, \
-    ENTER_NAME, CHOOSE_INTEREST, BOYS, GIRLS, ALL
+    ENTER_NAME, CHOOSE_INTEREST, BOYS, GIRLS, ALL, ENTER_LOCATION, NOT_FOUND_LOCATION, SElECT_LOCATION
+from tgbot.locations.utils import search_place
 from tgbot.models import User
 
-LANGUAGE, SEX, AGE, NAME, LOCATION, INTEREST = range(6)
+LANGUAGE, SEX, AGE, NAME, LOCATION, INTEREST, SELECT_LOCATION, PHOTO = range(8)
 
 
 def choose_language(update: Update, context: CallbackContext):
@@ -110,8 +111,8 @@ def set_interest(update: Update, context: CallbackContext):
         u.save()
 
         update.message.reply_text(
-            "ABOBUS",
-            reply_markup=ReplyKeyboardRemove()
+            ENTER_LOCATION[u.bot_language],
+            reply_markup=make_location_keyboard(u.bot_language)
         )
 
         return LOCATION
@@ -122,3 +123,72 @@ def set_interest(update: Update, context: CallbackContext):
         )
 
         return INTEREST
+
+
+def search_location(update: Update, context: CallbackContext):
+    u = User.get_user(update, context)
+
+    results = search_place(update.message.text)
+
+    if len(results):
+
+        context.user_data['location_candidates'] = results
+
+        update.message.reply_text(
+            SElECT_LOCATION[u.bot_language],
+            reply_markup=make_select_location_keyboard(f"{obj['name']} ({obj['formatted_address']})" for obj in results)
+        )
+
+        return SELECT_LOCATION
+    else:
+        update.message.reply_text(
+            NOT_FOUND_LOCATION[u.bot_language],
+            reply_markup=make_location_keyboard(u.bot_language)
+        )
+
+        return LOCATION
+
+
+def select_location(update: Update, context: CallbackContext):
+    u = User.get_user(update, context)
+
+    for candidate in context.user_data['location_candidates']:
+        if f"{candidate['name']} ({candidate['formatted_address']})" == update.message.text:
+            u.location_lat = candidate['geometry']['location']['lat']
+            u.location_lon = candidate['geometry']['location']['lng']
+            u.location_name = update.message.text
+            u.save()
+
+            update.message.reply_text(
+                "Nice",
+                reply_markup=make_select_location_keyboard(
+                    f"{obj['name']} ({obj['formatted_address']})" for obj in context.user_data['location_candidates'])
+            )
+
+            return PHOTO
+
+    update.message.reply_text(
+        SElECT_LOCATION[u.bot_language],
+        reply_markup=make_select_location_keyboard(
+            f"{obj['name']} ({obj['formatted_address']})" for obj in context.user_data['location_candidates'])
+    )
+
+    return SELECT_LOCATION
+
+
+def save_location(update: Update, context: CallbackContext):
+    u = User.get_user(update, context)
+
+    lat, lon = update.message.location.latitude, update.message.location.longitude
+
+    u.location_lon = lon
+    u.location_lat = lat
+    u.location_name = "-"
+    u.save()
+
+    update.message.reply_text(
+        "Nice",
+        reply_markup=make_location_keyboard(u.bot_language)
+    )
+
+    return PHOTO

@@ -1,6 +1,6 @@
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ReplyMarkup
 
-from tgbot.handlers.states.static_text import language_codes, MAN, WOMAN, BOYS, GIRLS, ALL
+from tgbot.handlers.states.static_text import language_codes, MAN, WOMAN, BOYS, GIRLS, ALL, SEND_LOCATION
 from tgbot.models import User
 
 
@@ -42,6 +42,26 @@ def make_keyboard_for_interest(lan) -> ReplyKeyboardMarkup:
         [
             KeyboardButton(BOYS[lan]), KeyboardButton(GIRLS[lan]), KeyboardButton(ALL[lan])
         ]
+    ]
+
+    return ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+
+
+def make_location_keyboard(lan) -> ReplyKeyboardMarkup:
+    buttons = [
+        [
+            KeyboardButton(SEND_LOCATION[lan], request_location=True)
+        ]
+    ]
+
+    return ReplyKeyboardMarkup(buttons, resize_keyboard=True)
+
+
+def make_select_location_keyboard(names) -> ReplyKeyboardMarkup:
+    buttons = [
+        [
+            KeyboardButton(name)
+        ] for name in names
     ]
 
     return ReplyKeyboardMarkup(buttons, resize_keyboard=True)

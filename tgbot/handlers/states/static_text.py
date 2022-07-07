@@ -63,3 +63,29 @@ ALL = {
     "RU": "Всё равно",
     "EN": "All",
 }
+
+ENTER_LOCATION = {
+    "UA": "Введи назву свого місцезнаходження (місто, село, район, універ, будь-що) або відправ геологацію місця:",
+    "RU": "Введи название своего местонахождения (город, село, район, универ, что-угодно) "
+          "или отправь геолокацию места:",
+    "EN": "Enter the name of your location (city, village, district, university, whatever) or send the geolocation of "
+          "the place:",
+}
+
+NOT_FOUND_LOCATION = {
+    "UA": "Локацію не знайдено, спробуй ще раз:",
+    "RU": "Локацию не найдено, попробуй снова:",
+    "EN": "Location not found, try again:",
+}
+
+SEND_LOCATION = {
+    "UA": "Відправити локацію",
+    "RU": "Отправить локацию",
+    "EN": "Send location",
+}
+
+SElECT_LOCATION = {
+    "UA": "Обери локацію зі списка:",
+    "RU": "Выбери локацию из списка:",
+    "EN": "Select location from list:",
+}

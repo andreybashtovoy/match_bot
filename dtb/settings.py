@@ -162,6 +162,8 @@ if TELEGRAM_TOKEN is None:
 
 TELEGRAM_LOGS_CHAT_ID = os.getenv("TELEGRAM_LOGS_CHAT_ID", default=None)
 
+PLACES_API_KEY = os.getenv("PLACES_API_KEY", default=None)
+
 # -----> SENTRY
 # import sentry_sdk
 # from sentry_sdk.integrations.django import DjangoIntegration

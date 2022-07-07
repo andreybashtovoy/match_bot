@@ -15,7 +15,7 @@ from telegram.ext import (
 from dtb.celery import app  # event processing in async mode
 from dtb.settings import TELEGRAM_TOKEN, DEBUG
 from tgbot.handlers.states.handlers import choose_language, LANGUAGE, SEX, choose_sex, AGE, set_age, NAME, set_name, \
-    INTEREST, set_interest
+    INTEREST, set_interest, LOCATION, search_location, SELECT_LOCATION, select_location, save_location
 from tgbot.handlers.states.static_text import language_codes
 
 from tgbot.handlers.utils import files, error
@@ -41,10 +41,6 @@ def setup_dispatcher(dp):
     dp.add_handler(CommandHandler("admin", admin_handlers.admin))
     dp.add_handler(CommandHandler("stats", admin_handlers.stats))
     dp.add_handler(CommandHandler('export_users', admin_handlers.export_users))
-
-    # location
-    dp.add_handler(CommandHandler("ask_location", location_handlers.ask_for_location))
-    dp.add_handler(MessageHandler(Filters.location, location_handlers.location_handler))
 
     # secret level
     dp.add_handler(CallbackQueryHandler(onboarding_handlers.secret_level, pattern=f"^{SECRET_LEVEL_BUTTON}"))
@@ -74,6 +70,11 @@ def setup_dispatcher(dp):
             AGE: [MessageHandler(Filters.text, set_age)],
             NAME: [MessageHandler(Filters.text, set_name)],
             INTEREST: [MessageHandler(Filters.text, set_interest)],
+            LOCATION: [
+                MessageHandler(Filters.text, search_location),
+                MessageHandler(Filters.location, save_location)
+            ],
+            SELECT_LOCATION: [MessageHandler(Filters.text, select_location)],
             # LOCATION: [
             #     MessageHandler(filters.LOCATION, location),
             #     CommandHandler("skip", skip_location),
