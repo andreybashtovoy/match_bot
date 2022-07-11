@@ -164,7 +164,7 @@ def select_location(update: Update, context: CallbackContext):
 
             update.message.reply_text(
                 photo_text(u),
-                reply_markup=make_keyboard_for_photo(u.bot_language)
+                reply_markup=make_keyboard_for_photo(u.bot_language, first=True)
             )
 
             return PHOTO
@@ -199,7 +199,7 @@ def save_location(update: Update, context: CallbackContext):
 
     update.message.reply_text(
         photo_text(u),
-        reply_markup=make_keyboard_for_photo(u.bot_language)
+        reply_markup=make_keyboard_for_photo(u.bot_language, first=True)
     )
 
     return PHOTO
@@ -263,14 +263,14 @@ def add_file(update: Update, context: CallbackContext):
 def save_photo(update: Update, context: CallbackContext):
     u = User.get_user(update, context)
 
-    if update.message.text == BACK:
+    if update.message.text == BACK[u.bot_language]:
         update.message.reply_text(
             ENTER_LOCATION[u.bot_language],
             reply_markup=make_location_keyboard(u.bot_language)
         )
 
         return LOCATION
-    elif update.message.text == ENOUGH_PHOTO:
+    elif update.message.text == ENOUGH_PHOTO[u.bot_language]:
         update.message.reply_text(
             ENTER_LOCATION[u.bot_language],
             reply_markup=make_location_keyboard(u.bot_language)
