@@ -89,3 +89,23 @@ SElECT_LOCATION = {
     "RU": "Выбери локацию из списка:",
     "EN": "Select location from list:",
 }
+
+SEND_PHOTO = {
+    "UA": "Надішли фото або відео, які будуть відображені у твоїй анкеті. Завантажено %s фото та %s відео.",
+    "RU": "Отправь фотографии или видео, которые будут отображены в твоей анкете."
+          " Загружено %s фото и %s видео.",
+    "EN": "Sent a photo or video that will be displayed in your profile. Loaded %s photos and %s videos",
+}
+
+ENOUGH_PHOTO = {
+    "UA": "Зберегти",
+    "RU": "Сохранить",
+    "EN": "Save",
+}
+
+BACK = {
+    "UA": "Назад",
+    "RU": "Назад",
+    "EN": "Back",
+}
+

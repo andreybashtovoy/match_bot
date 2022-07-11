@@ -9,7 +9,5 @@ def search_place(name: str):
     place_search = maps_api.places(
         name
     )
-    print("Place search results")
-    print(place_search)
 
     return place_search['results']

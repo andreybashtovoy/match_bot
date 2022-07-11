@@ -15,7 +15,8 @@ from telegram.ext import (
 from dtb.celery import app  # event processing in async mode
 from dtb.settings import TELEGRAM_TOKEN, DEBUG
 from tgbot.handlers.states.handlers import choose_language, LANGUAGE, SEX, choose_sex, AGE, set_age, NAME, set_name, \
-    INTEREST, set_interest, LOCATION, search_location, SELECT_LOCATION, select_location, save_location
+    INTEREST, set_interest, LOCATION, search_location, SELECT_LOCATION, select_location, save_location, PHOTO, \
+    add_photo, add_video, add_file, save_photo
 from tgbot.handlers.states.static_text import language_codes
 
 from tgbot.handlers.utils import files, error
@@ -75,6 +76,12 @@ def setup_dispatcher(dp):
                 MessageHandler(Filters.location, save_location)
             ],
             SELECT_LOCATION: [MessageHandler(Filters.text, select_location)],
+            PHOTO: [
+                MessageHandler(Filters.photo, add_photo),
+                MessageHandler(Filters.video, add_video),
+                MessageHandler(Filters.attachment, add_file),
+                MessageHandler(Filters.text, save_photo),
+            ],
             # LOCATION: [
             #     MessageHandler(filters.LOCATION, location),
             #     CommandHandler("skip", skip_location),

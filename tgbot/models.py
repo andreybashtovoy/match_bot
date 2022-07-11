@@ -114,3 +114,16 @@ class Location(CreateTracker):
             save_data_from_arcgis(latitude=self.latitude, longitude=self.longitude, location_id=self.pk)
         else:
             save_data_from_arcgis.delay(latitude=self.latitude, longitude=self.longitude, location_id=self.pk)
+
+
+class Media(CreateTracker):
+    file_id = models.CharField(max_length=256, primary_key=True)
+    user = models.ForeignKey(User, related_name="media", on_delete=models.CASCADE)
+
+    class MediaType(models.IntegerChoices):
+        PHOTO = 0
+        VIDEO = 1
+
+    is_main = models.BooleanField(default=False)
+
+    media_type = models.IntegerField(choices=MediaType.choices)
