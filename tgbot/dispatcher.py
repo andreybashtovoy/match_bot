@@ -16,7 +16,7 @@ from dtb.celery import app  # event processing in async mode
 from dtb.settings import TELEGRAM_TOKEN, DEBUG
 from tgbot.handlers.states.handlers import choose_language, LANGUAGE, SEX, choose_sex, AGE, set_age, NAME, set_name, \
     INTEREST, set_interest, LOCATION, search_location, SELECT_LOCATION, select_location, save_location, PHOTO, \
-    add_photo, add_video, add_file, save_photo
+    add_photo, add_video, add_file, save_photo, DESCRIPTION, save_description, PROFILE, profile_funcs
 from tgbot.handlers.states.static_text import language_codes
 
 from tgbot.handlers.utils import files, error
@@ -64,7 +64,7 @@ def setup_dispatcher(dp):
     dp.add_error_handler(error.send_stacktrace_to_tg_chat)
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", onboarding_handlers.command_start)],
+        entry_points=[MessageHandler(Filters.text, onboarding_handlers.command_start)],
         states={
             LANGUAGE: [MessageHandler(Filters.text, choose_language)],
             SEX: [MessageHandler(Filters.text, choose_sex)],
@@ -82,6 +82,8 @@ def setup_dispatcher(dp):
                 MessageHandler(Filters.attachment, add_file),
                 MessageHandler(Filters.text, save_photo),
             ],
+            DESCRIPTION: [MessageHandler(Filters.text, save_description)],
+            PROFILE: [MessageHandler(Filters.text, profile_funcs)],
             # LOCATION: [
             #     MessageHandler(filters.LOCATION, location),
             #     CommandHandler("skip", skip_location),

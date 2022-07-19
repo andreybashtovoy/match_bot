@@ -45,6 +45,7 @@ class User(CreateUpdateTracker):
     location_lat = models.FloatField(default=0)
     location_lon = models.FloatField(default=0)
     location_name = models.CharField(null=True, blank=True, max_length=200)
+    description = models.CharField(max_length=512, default="")
 
     class Interest(models.IntegerChoices):
         BOYS = 0

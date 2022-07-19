@@ -6,6 +6,7 @@ from telegram.ext import CallbackContext
 
 import tgbot.handlers.states.static_text
 from tgbot.handlers.onboarding import static_text
+from tgbot.handlers.states.handlers import send_profile, PROFILE
 from tgbot.handlers.utils.info import extract_user_data_from_update
 from tgbot.models import User
 from tgbot.handlers.states.keyboards import make_keyboard_for_language
@@ -14,12 +15,17 @@ from tgbot.handlers.states.keyboards import make_keyboard_for_language
 def command_start(update: Update, context: CallbackContext) -> int:
     u, created = User.get_user_and_created(update, context)
 
-    text = tgbot.handlers.states.static_text.CHOOSE_LANGUAGE[u.bot_language]
+    if u.location_name is None or u.media.count() == 0:
+        text = tgbot.handlers.states.static_text.CHOOSE_LANGUAGE[u.bot_language]
 
-    update.message.reply_text(text=text,
-                              reply_markup=make_keyboard_for_language())
+        update.message.reply_text(text=text,
+                                  reply_markup=make_keyboard_for_language())
 
-    return 0
+        return 0
+    else:
+        send_profile(update, u)
+
+        return PROFILE
 
 
 def secret_level(update: Update, context: CallbackContext) -> None:

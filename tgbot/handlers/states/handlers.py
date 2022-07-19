@@ -2,14 +2,16 @@ from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 
 from tgbot.handlers.states.keyboards import make_keyboard_for_sex, make_keyboard_for_language, make_keyboard_for_name, \
-    make_keyboard_for_interest, make_location_keyboard, make_select_location_keyboard, make_keyboard_for_photo
+    make_keyboard_for_interest, make_location_keyboard, make_select_location_keyboard, make_keyboard_for_photo, \
+    make_keyboard_for_description, make_keyboard_for_profile, make_keyboard_for_age
 from tgbot.handlers.states.static_text import language_codes, CHOOSE_SEX, CHOOSE_LANGUAGE, MAN, WOMAN, ENTER_AGE, \
     ENTER_NAME, CHOOSE_INTEREST, BOYS, GIRLS, ALL, ENTER_LOCATION, NOT_FOUND_LOCATION, SElECT_LOCATION, SEND_PHOTO, \
-    BACK, ENOUGH_PHOTO
-from tgbot.locations.utils import search_place
+    BACK, ENOUGH_PHOTO, ENTER_DESCRIPTION, SKIP, MY_PROFILE, CHANGE_MAIN, EDIT_PROFILE, CHOOSE_LANGUAGE_PROFILE, \
+    SAVE_CURRENT, REMOVE_ALL_PHOTO, SAVE_CURRENT_DESC
+from tgbot.locations.utils import search_place, get_place_name
 from tgbot.models import User, Media
 
-LANGUAGE, SEX, AGE, NAME, LOCATION, INTEREST, SELECT_LOCATION, PHOTO, PROFILE = range(9)
+LANGUAGE, SEX, AGE, NAME, LOCATION, INTEREST, SELECT_LOCATION, PHOTO, DESCRIPTION, PROFILE = range(10)
 
 
 def choose_language(update: Update, context: CallbackContext):
@@ -47,7 +49,7 @@ def choose_sex(update: Update, context: CallbackContext):
 
         update.message.reply_text(
             ENTER_AGE[u.bot_language],
-            reply_markup=ReplyKeyboardRemove()
+            reply_markup=make_keyboard_for_age(u)
         )
 
         return AGE
@@ -78,7 +80,8 @@ def set_age(update: Update, context: CallbackContext):
 
     else:
         update.message.reply_text(
-            ENTER_AGE[u.bot_language]
+            ENTER_AGE[u.bot_language],
+            reply_markup=make_keyboard_for_age(u)
         )
 
         return AGE
@@ -89,6 +92,7 @@ def set_name(update: Update, context: CallbackContext):
 
     name = update.message.text[:30]
     u.name = name
+    u.save()
 
     update.message.reply_text(
         CHOOSE_INTEREST[u.bot_language],
@@ -113,7 +117,7 @@ def set_interest(update: Update, context: CallbackContext):
 
         update.message.reply_text(
             ENTER_LOCATION[u.bot_language],
-            reply_markup=make_location_keyboard(u.bot_language)
+            reply_markup=make_location_keyboard(u.bot_language, exists=u.location_name is not None)
         )
 
         return LOCATION
@@ -128,6 +132,14 @@ def set_interest(update: Update, context: CallbackContext):
 
 def search_location(update: Update, context: CallbackContext):
     u = User.get_user(update, context)
+
+    if update.message.text == SAVE_CURRENT[u.bot_language]:
+        update.message.reply_text(
+            photo_text(u),
+            reply_markup=make_keyboard_for_photo(u.bot_language, first=not bool(u.media.count()))
+        )
+
+        return PHOTO
 
     results = search_place(update.message.text)
 
@@ -144,7 +156,7 @@ def search_location(update: Update, context: CallbackContext):
     else:
         update.message.reply_text(
             NOT_FOUND_LOCATION[u.bot_language],
-            reply_markup=make_location_keyboard(u.bot_language)
+            reply_markup=make_location_keyboard(u.bot_language, exists=u.location_name is not None)
         )
 
         return LOCATION
@@ -157,14 +169,12 @@ def select_location(update: Update, context: CallbackContext):
         if f"{candidate['name']} ({candidate['formatted_address']})" == update.message.text:
             u.location_lat = candidate['geometry']['location']['lat']
             u.location_lon = candidate['geometry']['location']['lng']
-            u.location_name = update.message.text
+            u.location_name = get_place_name(u.location_lat, u.location_lon)
             u.save()
-
-            u.media.all().delete()
 
             update.message.reply_text(
                 photo_text(u),
-                reply_markup=make_keyboard_for_photo(u.bot_language, first=True)
+                reply_markup=make_keyboard_for_photo(u.bot_language, first=not bool(u.media.count()))
             )
 
             return PHOTO
@@ -192,14 +202,13 @@ def save_location(update: Update, context: CallbackContext):
 
     u.location_lon = lon
     u.location_lat = lat
-    u.location_name = "-"
-    u.save()
 
-    u.media.all().delete()
+    u.location_name = get_place_name(lat, lon)
+    u.save()
 
     update.message.reply_text(
         photo_text(u),
-        reply_markup=make_keyboard_for_photo(u.bot_language, first=True)
+        reply_markup=make_keyboard_for_photo(u.bot_language, first=not bool(u.media.count()))
     )
 
     return PHOTO
@@ -266,21 +275,104 @@ def save_photo(update: Update, context: CallbackContext):
     if update.message.text == BACK[u.bot_language]:
         update.message.reply_text(
             ENTER_LOCATION[u.bot_language],
-            reply_markup=make_location_keyboard(u.bot_language)
+            reply_markup=make_location_keyboard(u.bot_language, exists=u.location_name is not None)
         )
 
         return LOCATION
     elif update.message.text == ENOUGH_PHOTO[u.bot_language]:
         update.message.reply_text(
-            ENTER_LOCATION[u.bot_language],
-            reply_markup=make_location_keyboard(u.bot_language)
+            ENTER_DESCRIPTION[u.bot_language],
+            reply_markup=make_keyboard_for_description(u.bot_language, exists=u.description != "")
         )
 
-        return LOCATION
+        return DESCRIPTION
+
+    elif update.message.text == REMOVE_ALL_PHOTO[u.bot_language]:
+        u.media.all().delete()
 
     update.message.reply_text(
         photo_text(u),
-        reply_markup=make_keyboard_for_photo(u.bot_language)
+        reply_markup=make_keyboard_for_photo(u.bot_language, first=not bool(u.media.count()))
     )
 
     return PHOTO
+
+
+def profile_text(user: User) -> str:
+    return MY_PROFILE[user.bot_language].format(
+        name=user.name,
+        years=user.age,
+        place=user.location_name,
+        description=" - " + user.description if user.description != "" else ""
+    )
+
+
+def send_profile(update: Update, u: User):
+    media = u.media.filter(is_main=True).first()
+
+    if media is None:
+        media = u.media.first()
+
+    if media.media_type == Media.MediaType.PHOTO:
+        update.message.reply_photo(
+            caption=profile_text(u),
+            photo=media.file_id,
+            reply_markup=make_keyboard_for_profile(u.bot_language)
+        )
+    else:
+        update.message.reply_video(
+            caption=profile_text(u),
+            video=media.file_id,
+            reply_markup=make_keyboard_for_profile(u.bot_language)
+        )
+
+
+def save_description(update: Update, context: CallbackContext):
+    u = User.get_user(update, context)
+
+    if update.message.text == SKIP[u.bot_language]:
+        u.description = ""
+    elif update.message.text == SAVE_CURRENT_DESC[u.bot_language]:
+        pass
+    elif update.message.text == BACK[u.bot_language]:
+        update.message.reply_text(
+            photo_text(u),
+            reply_markup=make_keyboard_for_photo(u.bot_language)
+        )
+
+        return PHOTO
+    else:
+        u.description = update.message.text[:512]
+
+    u.save()
+
+    send_profile(update, u)
+
+    return PROFILE
+
+
+def profile_funcs(update: Update, context: CallbackContext):
+    u = User.get_user(update, context)
+
+    if update.message.text == CHANGE_MAIN[u.bot_language]:
+        photos: list[Media] = list(u.media.all())
+
+        main_index = 0
+        photo_count = len(photos)
+
+        for i in range(photo_count):
+            if photos[i].is_main:
+                photos[i].is_main = False
+                photos[i].save()
+                main_index = i
+                break
+
+        photos[(main_index + 1) % photo_count].is_main = True
+        photos[(main_index + 1) % photo_count].save()
+
+        send_profile(update, u)
+    elif update.message.text == EDIT_PROFILE[u.bot_language]:
+        update.message.reply_text(text=CHOOSE_LANGUAGE_PROFILE[u.bot_language],
+                                  reply_markup=make_keyboard_for_language())
+
+        return LANGUAGE

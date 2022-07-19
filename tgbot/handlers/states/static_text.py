@@ -10,6 +10,12 @@ CHOOSE_LANGUAGE = {
     "EN": "Hello! Choose the language you want to communicate with the bot:",
 }
 
+CHOOSE_LANGUAGE_PROFILE = {
+    "UA": "Обери бажану мову для спілкування з ботом:",
+    "RU": "Выбери желаемый язык для общения с ботом:",
+    "EN": "Choose the language you want to communicate with the bot:",
+}
+
 CHOOSE_SEX = {
     "UA": "Якої ти статі?",
     "RU": "Укажи свой пол:",
@@ -109,3 +115,50 @@ BACK = {
     "EN": "Back",
 }
 
+SKIP = {
+    "UA": "Пропустити",
+    "RU": "Пропустить",
+    "EN": "Skip",
+}
+
+ENTER_DESCRIPTION = {
+    "UA": "Розкажи про себе, кого хочеш знайти:",
+    "RU": "Расскажи о себе, кого хочешь найти:",
+    "EN": "Tell me about yourself, who do you want to find:",
+}
+
+MY_PROFILE = {
+    "UA": "{name}, {years} років, {place}{description}",
+    "RU": "{name}, {years} лет, {place}{description}",
+    "EN": "{name}, {years} y.o., {place}{description}",
+}
+
+CHANGE_MAIN = {
+    "UA": "Переключити аватар",
+    "RU": "Переключить аватар",
+    "EN": "Switch avatar",
+}
+
+EDIT_PROFILE = {
+    "UA": "Редагувати анекту",
+    "RU": "Редактировать анкету",
+    "EN": "Edit Profile",
+}
+
+SAVE_CURRENT = {
+    "UA": "Зберегти поточну",
+    "RU": "Сохранить текущую",
+    "EN": "Save current",
+}
+
+REMOVE_ALL_PHOTO = {
+    "UA": "Видалити всі фото",
+    "RU": "Удалить все фото",
+    "EN": "Remove all photo",
+}
+
+SAVE_CURRENT_DESC = {
+    "UA": "Зберегти поточний текст",
+    "RU": "Сохранить текущий текст",
+    "EN": "Save current text",
+}

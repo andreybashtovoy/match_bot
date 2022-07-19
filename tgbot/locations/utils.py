@@ -11,3 +11,12 @@ def search_place(name: str):
     )
 
     return place_search['results']
+
+
+def get_place_name(lat, lng):
+    results = maps_api.places(location=(lat, lng), type="cities")['results']
+
+    if len(results):
+        return results[0]['name']
+    else:
+        return "-"
