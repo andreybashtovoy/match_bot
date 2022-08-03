@@ -1,5 +1,6 @@
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ReplyMarkup, WebAppInfo
 
+from dtb.settings import WEB_APP_URL
 from tgbot.handlers.states.static_text import language_codes, MAN, WOMAN, BOYS, GIRLS, ALL, SEND_LOCATION, ENOUGH_PHOTO, \
     BACK, SKIP, CHANGE_MAIN, EDIT_PROFILE, SAVE_CURRENT, REMOVE_ALL_PHOTO, SAVE_CURRENT_DESC, WATCH_PROFILE
 from tgbot.models import User
@@ -110,7 +111,8 @@ def make_keyboard_for_profile(user: User) -> ReplyKeyboardMarkup:
 
         ],
         [
-            KeyboardButton(WATCH_PROFILE[user.bot_language], web_app=WebAppInfo('https://fresh-moth-37.loca.lt/'))
+            KeyboardButton(WATCH_PROFILE[user.bot_language],
+                           web_app=WebAppInfo(f'{WEB_APP_URL}/profile/{user.user_id}'))
         ]
     ]
 
