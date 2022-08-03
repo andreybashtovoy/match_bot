@@ -229,6 +229,7 @@ def add_photo(update: Update, context: CallbackContext):
         file_id=update.message.photo[0].get_file().file_id,
         user=u,
         media_type=Media.MediaType.PHOTO,
+        link=context.bot.get_file(update.message.photo[0].get_file().file_id)['file_path'],
         is_main=not bool(u.media.count())
     )
 
@@ -247,6 +248,7 @@ def add_video(update: Update, context: CallbackContext):
         file_id=update.message.video.file_id,
         user=u,
         media_type=Media.MediaType.VIDEO,
+        link=context.bot.get_file(update.message.video.file_id)['file_path'],
         is_main=not bool(u.media.count())
     )
 
@@ -317,13 +319,13 @@ def send_profile(update: Update, u: User):
         update.message.reply_photo(
             caption=profile_text(u),
             photo=media.file_id,
-            reply_markup=make_keyboard_for_profile(u.bot_language)
+            reply_markup=make_keyboard_for_profile(u)
         )
     else:
         update.message.reply_video(
             caption=profile_text(u),
             video=media.file_id,
-            reply_markup=make_keyboard_for_profile(u.bot_language)
+            reply_markup=make_keyboard_for_profile(u)
         )
 
 

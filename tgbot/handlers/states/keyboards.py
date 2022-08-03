@@ -1,7 +1,7 @@
-from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ReplyMarkup
+from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ReplyMarkup, WebAppInfo
 
 from tgbot.handlers.states.static_text import language_codes, MAN, WOMAN, BOYS, GIRLS, ALL, SEND_LOCATION, ENOUGH_PHOTO, \
-    BACK, SKIP, CHANGE_MAIN, EDIT_PROFILE, SAVE_CURRENT, REMOVE_ALL_PHOTO, SAVE_CURRENT_DESC
+    BACK, SKIP, CHANGE_MAIN, EDIT_PROFILE, SAVE_CURRENT, REMOVE_ALL_PHOTO, SAVE_CURRENT_DESC, WATCH_PROFILE
 from tgbot.models import User
 
 
@@ -103,10 +103,14 @@ def make_keyboard_for_description(lan, exists=False) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(buttons, resize_keyboard=True)
 
 
-def make_keyboard_for_profile(lan) -> ReplyKeyboardMarkup:
+def make_keyboard_for_profile(user: User) -> ReplyKeyboardMarkup:
     buttons = [
         [
-            KeyboardButton(CHANGE_MAIN[lan]), KeyboardButton(EDIT_PROFILE[lan])
+            KeyboardButton(CHANGE_MAIN[user.bot_language]), KeyboardButton(EDIT_PROFILE[user.bot_language]),
+
+        ],
+        [
+            KeyboardButton(WATCH_PROFILE[user.bot_language], web_app=WebAppInfo('https://fresh-moth-37.loca.lt/'))
         ]
     ]
 

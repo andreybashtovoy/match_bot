@@ -120,6 +120,7 @@ class Location(CreateTracker):
 class Media(CreateTracker):
     file_id = models.CharField(max_length=256, primary_key=True)
     user = models.ForeignKey(User, related_name="media", on_delete=models.CASCADE)
+    link = models.CharField(max_length=512, default="")
 
     class MediaType(models.IntegerChoices):
         PHOTO = 0
