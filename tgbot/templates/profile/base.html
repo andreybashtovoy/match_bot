@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Titlee</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iphone-inline-video/2.2.2/iphone-inline-video.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
+            integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -27,4 +30,19 @@ asdsfg
 
 
 </body>
+
+<style>
+    .IIV::-webkit-media-controls-play-button,
+    .IIV::-webkit-media-controls-start-playback-button {
+        opacity: 0;
+        pointer-events: none;
+        width: 5px;
+    }
+</style>
+
+<script>
+    $('video').each(function () {
+        enableInlineVideo(this);
+    });
+</script>
 </html>
