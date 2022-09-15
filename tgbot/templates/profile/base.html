@@ -15,7 +15,7 @@
     {% if type == 0 %}
         <img src="{{ link }}"><br>
     {% else %}
-        <video style="width: 100%" controls autoplay muted>
+        <video preload="metadata" style="width: 100%" controls autoplay muted>
             <source src="{{ link }}" type="video/mp4"/>
             <source src="{{ link }}" type="video/ogg"/>
             Your browser does not support the video tag.
