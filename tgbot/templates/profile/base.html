@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/iphone-inline-video/2.2.2/iphone-inline-video.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
             integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -14,7 +15,7 @@ erw
     {% if type == 0 %}
         <img src="{{ link }}"><br>
     {% else %}
-        <video autoplay muted playsinline>
+        <video>
             <source src="{{ link }}" type="video/mp4"/>
             <source src="{{ link }}" type="video/ogg"/>
             Your browser does not support the video tag.
