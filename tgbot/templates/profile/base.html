@@ -15,12 +15,14 @@
     {% if type == 0 %}
         <img src="{{ link }}"><br>
     {% else %}
-        <video style="width: 100%" controls autoplay muted playsinline>
+        <video style="width: 100%" controls playsinline loop muted autoplay>
             <source src="{{ link }}" type="video/mp4"/>
             <source src="{{ link }}" type="video/ogg"/>
             Your browser does not support the video tag.
         </video><br>
     {% endif %}
+
+
 {#    <video width="480" controls>#}
 {#        <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"#}
 {#                type="video/mp4"/>#}
