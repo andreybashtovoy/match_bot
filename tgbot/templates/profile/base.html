@@ -1,66 +1,45 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titlee</title>
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/iphone-inline-video/2.2.2/iphone-inline-video.min.js"></script>#}
+    {#    <script src="https://cdnjs.cloudflare.com/ajax/libs/iphone-inline-video/2.2.2/iphone-inline-video.min.js"></script>#}
     <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
             integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'tgbot/styles.css' %}" rel="stylesheet">
 </head>
 <body>
 
-<h1>Oio</h1>
-{% for link, type in photo_links %}
-    {% if type == 0 %}
-        <img src="{{ link }}"><br>
-    {% else %}
-        <video style="width: 100%" controls playsinline loop muted autoplay>
-            <source src="{{ link }}" type="video/mp4"/>
-            <source src="{{ link }}" type="video/ogg"/>
-            Your browser does not support the video tag.
-        </video><br>
-    {% endif %}
 
-
-
-
-{#    <video width="480" controls>#}
-{#        <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"#}
-{#                type="video/mp4"/>#}
-{#        Your browser does not support the video tag.#}
-{#    </video><br>#}
-{#    <img src="https://thumbs.gfycat.com/AbsoluteSourDormouse-size_restricted.gif">#}
-{% endfor %}
+<div class="media-container">
+    {% for link, type in photo_links %}
+        {% if type == 0 %}
+            <img class="media-element" src="{{ link }}"><br>
+        {% else %}
+            <video class="media-element" controls playsinline loop muted autoplay>
+                <source src="{{ link }}" type="video/mp4"/>
+                <source src="{{ link }}" type="video/ogg"/>
+                Your browser does not support the video tag.
+            </video><br>
+        {% endif %}
+    {% endfor %}
+</div>
 
 <script>
     $('body').on('click touchstart', function () {
         const videoElement = document.getElementsByTagName('video');
         if (videoElement.playing) {
             // video is already playing so do nothing
-        }
-        else {
+        } else {
             // video is not playing
             // so play video now
             videoElement.play();
         }
-});
+    });
 </script>
 
 </body>
 
-{#<style>#}
-{#    .IIV::-webkit-media-controls-play-button,#}
-{#    .IIV::-webkit-media-controls-start-playback-button {#}
-{#        opacity: 0;#}
-{#        pointer-events: none;#}
-{#        width: 5px;#}
-{#    }#}
-{#</style>#}
-{##}
-{#<script>#}
-{#    $('video').each(function () {#}
-{#        enableInlineVideo(this);#}
-{#    });#}
-{#</script>#}
 </html>
