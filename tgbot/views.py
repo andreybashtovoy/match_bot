@@ -43,7 +43,10 @@ def file_view(request, user_id, file_id):
 
     file = requests.get(media.link).content
 
-    return HttpResponse(file, content_type="video/mp4")
+    if media.media_type == media.MediaType.VIDEO:
+        return HttpResponse(file, content_type="video/mp4")
+    else:
+        return HttpResponse(file, content_type="image/png")
 
 
 def profile_view(request, user_id):
